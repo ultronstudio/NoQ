@@ -1,7 +1,21 @@
-@import "variables";
+@use "variables" as *;
 
-@import "bootstrap/scss/bootstrap";
+@use "bootstrap/scss/bootstrap" with (
+    $primary: $primary,
+    $font-family-sans-serif: $font-family-sans-serif,
+    $border-radius: $border-radius,
+    $border-radius-sm: $border-radius-sm,
+    $border-radius-lg: $border-radius-lg,
+    $body-bg: $body-bg,
+    $body-color: $body-color
+);
 
-@import "base";
-@import "layout";
-@import "components";
+@use "base";
+@use "layout";
+@use "components";
+
+@use "pages/auth";
+@use "pages/home";
+@use "pages/dashboard";
+@use "pages/queue";
+@use "pages/public";

@@ -1,29 +1,53 @@
-<x-layouts::auth :title="__('Confirm password')">
-    <div class="flex flex-col gap-6">
-        <x-auth-header
-            :title="__('Confirm password')"
-            :description="__('This is a secure area of the application. Please confirm your password before continuing.')"
-        />
+<div class="row justify-content-center">
+    <div class="col-sm-10 col-md-6 col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <div class="mb-4">
+                    <h1 class="h4 mb-1">Potvrzení hesla</h1>
 
-        <x-auth-session-status class="text-center" :status="session('status')" />
+                    <p class="text-body-secondary mb-0">
+                        Pro pokračování potvrďte své heslo.
+                    </p>
+                </div>
 
+                <form wire:submit="confirm">
+                    <div class="mb-4">
+                        <label for="password" class="form-label">
+                            Heslo
+                        </label>
 
-        <form method="POST" action="{{ route('password.confirm.store') }}" class="flex flex-col gap-6">
-            @csrf
+                        <input
+                            wire:model="password"
+                            type="password"
+                            id="password"
+                            class="form-control @error('password') is-invalid @enderror"
+                            autocomplete="current-password"
+                            autofocus
+                        >
 
-            <flux:input
-                name="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="current-password"
-                :placeholder="__('Password')"
-                viewable
-            />
+                        @error('password')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
 
-            <flux:button variant="primary" type="submit" class="w-full" data-test="confirm-password-button">
-                {{ __('Confirm') }}
-            </flux:button>
-        </form>
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                        wire:loading.attr="disabled"
+                        wire:target="confirm"
+                    >
+                        <span wire:loading.remove wire:target="confirm">
+                            Potvrdit
+                        </span>
+
+                        <span wire:loading wire:target="confirm">
+                            Ověřování…
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
-</x-layouts::auth>
+</div>

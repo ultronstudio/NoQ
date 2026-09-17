@@ -1,54 +1,76 @@
-<x-layouts::auth :title="__('Log in')">
-    <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
+<div class="auth-form">
+    <form wire:submit="login" novalidate>
+        <div class="mb-4">
+            <label for="email" class="form-label">
+                E-mail
+            </label>
 
-        <!-- Session Status -->
-        <x-auth-session-status class="text-center" :status="session('status')" />
-
-
-        <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
-            @csrf
-
-            <!-- Email Address -->
-            <flux:input
-                name="email"
-                :label="__('Email address')"
-                :value="old('email')"
+            <input
+                wire:model.blur="email"
                 type="email"
-                required
-                autofocus
+                id="email"
+                class="form-control form-control-lg @error('email') is-invalid @enderror"
                 autocomplete="email"
-                placeholder="email@example.com"
-            />
+                autofocus
+            >
 
-            <!-- Password -->
-            <div class="relative">
-                <flux:input
-                    name="password"
-                    :label="__('Password')"
-                    type="password"
-                    required
-                    autocomplete="current-password"
-                    :placeholder="__('Password')"
-                    viewable
-                />
+            @error('email')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
 
-                @if (Route::has('password.request'))
-                    <flux:link class="absolute top-0 text-sm end-0" :href="route('password.request')" wire:navigate>
-                        {{ __('Forgot your password?') }}
-                    </flux:link>
-                @endif
-            </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">
+                Heslo
+            </label>
 
-            <!-- Remember Me -->
-            <flux:checkbox name="remember" :label="__('Remember me')" :checked="old('remember')" />
+            <input
+                wire:model="password"
+                type="password"
+                id="password"
+                class="form-control form-control-lg @error('password') is-invalid @enderror"
+                autocomplete="current-password"
+            >
 
-            <div class="flex items-center justify-end">
-                <flux:button variant="primary" type="submit" class="w-full" data-test="login-button">
-                    {{ __('Log in') }}
-                </flux:button>
-            </div>
-        </form>
+            @error('password')
+                <div class="invalid-feedback">
+                    {{ $message }}
+                </div>
+            @enderror
+        </div>
 
-    </div>
-</x-layouts::auth>
+        <div class="form-check mb-4">
+            <input
+                wire:model="remember"
+                type="checkbox"
+                id="remember"
+                class="form-check-input"
+            >
+
+            <label for="remember" class="form-check-label">
+                Zapamatovat přihlášení
+            </label>
+        </div>
+
+        <button
+            type="submit"
+            class="btn btn-primary btn-lg w-100"
+            wire:loading.attr="disabled"
+            wire:target="login"
+        >
+            <span wire:loading.remove wire:target="login">
+                Přihlásit se
+            </span>
+
+            <span wire:loading wire:target="login">
+                Přihlašování…
+            </span>
+        </button>
+    </form>
+
+    <p class="auth-form__access">
+        Přístupové údaje poskytuje správce systému.
+    </p>
+</div>
