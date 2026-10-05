@@ -10,5 +10,10 @@ window.Echo = new Echo({
     wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
     wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
-    enabledTransports: ['ws', 'wss'],
+    // Pusher uses wss for the ws transport when forceTLS is true.
+    // Do not retry a plain HTTP Reverb endpoint using a separate TLS transport.
+    enabledTransports: ['ws'],
 });
+
+window.addEventListener('offline', () => window.Echo.disconnect());
+window.addEventListener('online', () => window.Echo.connector.pusher.connect());

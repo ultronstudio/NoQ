@@ -1,0 +1,39 @@
+// Inherited variables make the nearest explicitly themed container win,
+// including a light section inside a dark page (and the other way around).
+:root,
+[data-bs-theme="light"] {
+    --noq-logo-light-display: block;
+    --noq-logo-dark-display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-bs-theme="light"]) {
+        --noq-logo-light-display: none;
+        --noq-logo-dark-display: block;
+    }
+}
+
+[data-bs-theme="dark"] {
+    --noq-logo-light-display: none;
+    --noq-logo-dark-display: block;
+}
+
+.noq-logo {
+    display: inline-flex;
+    max-width: 100%;
+    vertical-align: middle;
+
+    > .noq-logo__image {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+    > .noq-logo__image--light {
+        display: var(--noq-logo-light-display, block);
+    }
+
+    > .noq-logo__image--dark {
+        display: var(--noq-logo-dark-display, none);
+    }
+}

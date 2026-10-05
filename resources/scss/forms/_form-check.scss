@@ -1,0 +1,8 @@
+.form-check {
+    cursor: pointer !important;
+
+    // všechny vnitřní elementy taky budou mít pointer
+    * {
+        cursor: pointer !important;
+    }
+}

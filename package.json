@@ -3,8 +3,11 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "test:pwa": "node --test tests/pwa.test.mjs",
+        "build:icons": "node scripts/generate-brand-assets.mjs",
         "build": "vp build",
-        "dev": "vp dev"
+        "dev": "php artisan config:clear && concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" --names=server,reverb,queue,vite --kill-others \"php artisan serve --tries=0\" \"php artisan reverb:start\" \"php artisan queue:listen --tries=1 --timeout=0\" \"npm run dev:vite\"",
+        "dev:vite": "vp dev --strictPort"
     },
     "dependencies": {
         "@popperjs/core": "^2.11.8",
@@ -23,6 +26,7 @@
     "devDependencies": {
         "laravel-echo": "^2.5.0",
         "pusher-js": "^8.6.0",
-        "sass": "^1.104.1"
+        "sass": "^1.104.1",
+        "sharp": "^0.35.5"
     }
 }

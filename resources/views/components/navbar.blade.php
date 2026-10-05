@@ -1,12 +1,7 @@
-<nav class="navbar navbar-expand-lg bg-white border-bottom">
+<nav class="navbar navbar-expand-lg bg-white border-bottom" data-bs-theme="light">
     <div class="container">
         <a href="{{ route('home') }}" class="navbar-brand p-0">
-            <img
-                src="https://placehold.co/180x56/00B7EF/FFFFFF?text=LOGO"
-                alt="NoQ"
-                width="150"
-                height="47"
-            >
+            @logo('auto', ['width' => 100])
         </a>
 
         <div class="ms-auto d-flex align-items-center gap-2">

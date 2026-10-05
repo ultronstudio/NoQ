@@ -1,16 +1,10 @@
 <!doctype html>
-<html lang="cs">
+<html lang="{{ config('metadata.language') }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>
-        @hasSection('title')
-            @yield('title') | NoQ
-        @else
-            NoQ
-        @endif
-    </title>
+    @include('partials.metadata')
 
     @vite([
         'resources/scss/app.scss',

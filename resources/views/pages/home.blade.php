@@ -6,10 +6,10 @@
     <div class="home-page">
         <div class="container">
             <section class="home-intro">
-                <h1>NoQ</h1>
+                <h1>{{ config('metadata.name') }}</h1>
 
                 <p>
-                    Systém pro správu virtuálních čekacích front.
+                    {{ config('metadata.description') }}
                 </p>
             </section>
 
@@ -17,7 +17,7 @@
                 <h2>Virtuální čekací fronty</h2>
 
                 <p>
-                    NoQ umožňuje návštěvníkům zařadit se do čekací fronty
+                    {{ config('metadata.name') }} umožňuje návštěvníkům zařadit se do čekací fronty
                     pomocí odkazu nebo QR kódu a sledovat svůj aktuální stav
                     bez nutnosti čekat na jednom místě.
                 </p>

@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="cs">
+<html lang="{{ config('metadata.language') }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>@yield('title', 'Přihlášení') | NoQ</title>
+    @include('partials.metadata')
 
     @vite([
         'resources/scss/app.scss',
@@ -20,12 +20,7 @@
         <aside class="auth-side">
             <div class="auth-side__inner">
                 <a href="{{ route('home') }}" class="auth-logo">
-                    <img
-                        src="https://placehold.co/180x56/FFFFFF/00B7EF?text=LOGO"
-                        alt="NoQ"
-                        width="180"
-                        height="56"
-                    >
+                    @logo('mono-white')
                 </a>
 
                 <div class="auth-side__content">
