@@ -1,0 +1,130 @@
+// NoQ – core virtual queue domain schema.
+// Mirrors the migrations in database/migrations/2026_10_06_1400*.
+// Pre-existing framework tables (users, cache, jobs, sessions, ...) are
+// omitted except where they are referenced by a foreign key below.
+
+Table users {
+  id bigint [pk, increment]
+  name varchar
+  email varchar [unique]
+  // ... remaining Fortify/auth columns are out of scope for this document.
+
+  Note: 'Existing operator/user table (Laravel Fortify). Unchanged by this milestone.'
+}
+
+Table virtual_queues {
+  id bigint [pk, increment]
+  user_id bigint [not null]
+  public_id char(26) [not null, unique, note: 'ULID, public identifier used in URLs/QR instead of id']
+  name varchar(120) [not null]
+  description varchar(500)
+  archived_at timestamp
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    public_id [unique]
+    user_id
+    archived_at
+  }
+
+  Note: 'Long-lived queue definition, e.g. "Studijní oddělení".'
+}
+
+Table queue_sessions {
+  id bigint [pk, increment]
+  virtual_queue_id bigint [not null]
+  opened_by_user_id bigint [not null]
+  closed_by_user_id bigint
+  status varchar [not null, note: 'open | paused | closed']
+  next_number int [not null, default: 1, note: 'unsigned, source of truth for ticket numbering']
+  opened_at timestamp [not null]
+  closed_at timestamp
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    virtual_queue_id
+    (virtual_queue_id, status)
+  }
+
+  Note: '''
+    One concrete run of a VirtualQueue. At most one row per virtual_queue_id
+    may be open or paused at a time; enforced in the application layer
+    (OpenQueueSession, row lock + transaction), not a DB constraint, so the
+    schema stays portable across SQLite/MySQL/PostgreSQL.
+  '''
+}
+
+Table service_points {
+  id bigint [pk, increment]
+  virtual_queue_id bigint [not null]
+  name varchar(80) [not null]
+  sort_order int [not null, default: 0, note: 'unsigned smallint']
+  is_active boolean [not null, default: true]
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    (virtual_queue_id, name) [unique]
+    (virtual_queue_id, is_active)
+  }
+
+  Note: 'Service desks within a queue, e.g. "Přepážka 1". Deactivated, never deleted, to preserve history.'
+}
+
+Table queue_entries {
+  id bigint [pk, increment]
+  queue_session_id bigint [not null]
+  service_point_id bigint [note: 'nullable; set once the entry is called']
+  tracking_token_hash char(64) [not null, unique, note: 'SHA-256 hash of the raw tracking token; raw value is never stored']
+  number int [not null, note: 'unsigned; assigned from queue_sessions.next_number']
+  status varchar [not null, note: 'waiting | called | completed | cancelled | no_show']
+  created_at timestamp
+  updated_at timestamp
+
+  Indexes {
+    (queue_session_id, number) [unique]
+    tracking_token_hash [unique]
+    (queue_session_id, status, number)
+  }
+
+  Note: '''
+    An anonymous visitor ticket. No visitor name/email/phone/IP is stored.
+    Position among waiting entries is derived from (queue_session_id,
+    status, number), not stored as a column.
+  '''
+}
+
+Table queue_entry_status_changes {
+  id bigint [pk, increment]
+  queue_entry_id bigint [not null]
+  from_status varchar [note: 'nullable; null only for the initial Waiting record']
+  to_status varchar [not null]
+  actor varchar [not null, note: 'visitor | operator | system']
+  changed_by_user_id bigint
+  service_point_id bigint
+  created_at timestamp [not null, note: 'no updated_at column: rows are immutable']
+
+  Indexes {
+    (queue_entry_id, created_at)
+    changed_by_user_id
+  }
+
+  Note: 'Immutable history of every QueueEntry status transition.'
+}
+
+Ref: virtual_queues.user_id > users.id [delete: restrict]
+
+Ref: queue_sessions.virtual_queue_id > virtual_queues.id [delete: cascade]
+Ref: queue_sessions.opened_by_user_id > users.id [delete: restrict]
+Ref: queue_sessions.closed_by_user_id > users.id [delete: set null]
+
+Ref: service_points.virtual_queue_id > virtual_queues.id [delete: cascade]
+
+Ref: queue_entries.queue_session_id > queue_sessions.id [delete: cascade]
+Ref: queue_entries.service_point_id > service_points.id [delete: set null]
+
+Ref: queue_entry_status_changes.queue_entry_id > queue_entries.id [delete: cascade]
+Ref: queue_entry_status_changes.changed_by_user_id > users.id [delete: set null]
+Ref: queue_entry_status_changes.service_point_id > service_points.id [delete: set null]
