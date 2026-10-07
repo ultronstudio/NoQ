@@ -18,13 +18,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
         $this->seedDemoQueue();
     }
 
@@ -38,6 +31,7 @@ class DatabaseSeeder extends Seeder
         $operator = User::factory()->create([
             'name' => 'Demo operátor',
             'email' => 'demo@noq.local',
+            'password' => bcrypt('demo'),
         ]);
 
         $virtualQueue = VirtualQueue::factory()->for($operator)->create([
