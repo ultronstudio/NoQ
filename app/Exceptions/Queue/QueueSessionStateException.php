@@ -35,4 +35,9 @@ final class QueueSessionStateException extends QueueDomainException
     {
         return new self("Queue session [{$session->getKey()}] is already closed and cannot be reopened.");
     }
+
+    public static function full(QueueSession $session, int $maxWaiting): self
+    {
+        return new self("Queue session [{$session->getKey()}] already has {$maxWaiting} waiting entries (its configured maximum).");
+    }
 }

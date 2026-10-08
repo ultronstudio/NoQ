@@ -14,16 +14,6 @@
             </p>
         </div>
 
-        <div class="card">
-            <div class="card-body">
-                <h2 class="h5">
-                    NoQ
-                </h2>
-
-                <p class="mb-0">
-                    Zde bude přehled front, akcí a aktuálního provozu.
-                </p>
-            </div>
-        </div>
+        <livewire:dashboard.queue-overview-table />
     </div>
 @endsection

@@ -62,4 +62,12 @@ class ServicePoint extends Model
     {
         return $this->hasMany(QueueEntryStatusChange::class);
     }
+
+    /**
+     * @return HasMany<RoleAssignment, $this>
+     */
+    public function roleAssignments(): HasMany
+    {
+        return $this->hasMany(RoleAssignment::class);
+    }
 }

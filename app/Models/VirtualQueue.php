@@ -22,11 +22,12 @@ use Illuminate\Support\Str;
  * @property string $public_id
  * @property string $name
  * @property string|null $description
+ * @property int|null $max_waiting
  * @property Carbon|null $archived_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['user_id', 'name', 'description'])]
+#[Fillable(['user_id', 'name', 'description', 'max_waiting'])]
 class VirtualQueue extends Model
 {
     /** @use HasFactory<VirtualQueueFactory> */
@@ -45,6 +46,7 @@ class VirtualQueue extends Model
     protected function casts(): array
     {
         return [
+            'max_waiting' => 'integer',
             'archived_at' => 'datetime',
         ];
     }
@@ -82,5 +84,13 @@ class VirtualQueue extends Model
     {
         return $this->hasOne(QueueSession::class)
             ->whereIn('status', [QueueSessionStatus::Open, QueueSessionStatus::Paused]);
+    }
+
+    /**
+     * @return HasMany<RoleAssignment, $this>
+     */
+    public function roleAssignments(): HasMany
+    {
+        return $this->hasMany(RoleAssignment::class);
     }
 }

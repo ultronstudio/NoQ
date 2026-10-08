@@ -9,6 +9,7 @@ use App\Enums\StatusChangeActor;
 use App\Exceptions\Queue\QueueSessionStateException;
 use App\Models\QueueEntry;
 use App\Models\QueueSession;
+use App\Models\VirtualQueue;
 use App\Support\Queue\TrackingToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -114,5 +115,58 @@ class JoinQueueTest extends TestCase
 
         $this->assertSame(1, $two->position());
         $this->assertSame(2, $three->position());
+    }
+
+    public function test_joining_is_allowed_up_to_the_configured_max_waiting(): void
+    {
+        $virtualQueue = VirtualQueue::factory()->create(['max_waiting' => 2]);
+        $session = QueueSession::factory()->for($virtualQueue)->create();
+        $join = new JoinQueue;
+
+        $join($session);
+        $join($session);
+
+        $this->assertSame(2, $session->entries()->where('status', QueueEntryStatus::Waiting)->count());
+    }
+
+    public function test_joining_is_rejected_once_max_waiting_is_reached(): void
+    {
+        $virtualQueue = VirtualQueue::factory()->create(['max_waiting' => 2]);
+        $session = QueueSession::factory()->for($virtualQueue)->create();
+        $join = new JoinQueue;
+
+        $join($session);
+        $join($session);
+
+        $this->expectException(QueueSessionStateException::class);
+
+        $join($session);
+    }
+
+    public function test_cancelling_an_entry_frees_up_capacity_for_a_new_join(): void
+    {
+        $virtualQueue = VirtualQueue::factory()->create(['max_waiting' => 1]);
+        $session = QueueSession::factory()->for($virtualQueue)->create();
+        $join = new JoinQueue;
+
+        $first = $join($session)->entry;
+        (new CancelEntry)($first);
+
+        $second = $join($session)->entry;
+
+        $this->assertSame(QueueEntryStatus::Waiting, $second->status);
+    }
+
+    public function test_a_null_max_waiting_means_unlimited(): void
+    {
+        $virtualQueue = VirtualQueue::factory()->create(['max_waiting' => null]);
+        $session = QueueSession::factory()->for($virtualQueue)->create();
+        $join = new JoinQueue;
+
+        for ($i = 0; $i < 10; $i++) {
+            $join($session);
+        }
+
+        $this->assertSame(10, $session->entries()->where('status', QueueEntryStatus::Waiting)->count());
     }
 }

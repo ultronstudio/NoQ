@@ -17,7 +17,8 @@ use Illuminate\Support\Facades\DB;
  * The ticket number comes from QueueSession::next_number rather than
  * MAX(number) + 1: the session row is locked for update inside the
  * transaction, so two concurrent joins are serialized and can never
- * receive the same number.
+ * receive the same number. The same lock makes the capacity check
+ * against VirtualQueue::max_waiting (when set) race-free too.
  */
 final class JoinQueue
 {
@@ -28,6 +29,16 @@ final class JoinQueue
 
             if ($locked->status !== QueueSessionStatus::Open) {
                 throw QueueSessionStateException::notOpen($locked);
+            }
+
+            $maxWaiting = $locked->virtualQueue->max_waiting;
+
+            if ($maxWaiting !== null) {
+                $waitingCount = $locked->entries()->where('status', QueueEntryStatus::Waiting)->count();
+
+                if ($waitingCount >= $maxWaiting) {
+                    throw QueueSessionStateException::full($locked, $maxWaiting);
+                }
             }
 
             $number = $locked->next_number;

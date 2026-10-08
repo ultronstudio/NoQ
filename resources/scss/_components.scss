@@ -5,3 +5,114 @@
 .card {
     border-color: rgba(0, 0, 0, .08);
 }
+
+/* Table */
+.queue-table {
+    --bs-table-bg: transparent;
+    --bs-table-color: inherit;
+    --bs-table-border-color: transparent;
+
+    border-collapse: separate;
+    border-spacing: 0 .4rem;
+
+    thead {
+        th {
+            padding: .5rem .85rem;
+            border: 0;
+            background: transparent;
+
+            color: #6c757d;
+            font-size: .8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+    }
+
+    tbody {
+        tr {
+            transition:
+                background-color .15s ease,
+                transform .15s ease,
+                box-shadow .15s ease;
+
+            > th,
+            > td {
+                padding: .75rem .85rem;
+                border: 0;
+
+                background-color: #f8f9fa;
+
+                transition: background-color .15s ease;
+            }
+
+            > th {
+                font-weight: 600;
+            }
+
+            > :first-child {
+                border-radius: .5rem 0 0 .5rem;
+            }
+
+            > :last-child {
+                border-radius: 0 .5rem .5rem 0;
+            }
+
+            &:hover {
+                > th,
+                > td {
+                    background-color: rgba(var(--bs-primary-rgb), .07);
+                }
+            }
+
+            &:focus-within {
+                > th,
+                > td {
+                    background-color: rgba(var(--bs-primary-rgb), .1);
+                }
+            }
+        }
+    }
+}
+
+
+/* Queue status */
+.queue-status {
+    display: inline-flex;
+    align-items: center;
+
+    padding: .3rem .6rem;
+
+    border-radius: 999px;
+
+    font-size: .8rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+
+    &::before {
+        content: "";
+
+        width: .4rem;
+        height: .4rem;
+        margin-right: .4rem;
+
+        border-radius: 50%;
+
+        background-color: currentColor;
+    }
+
+    &--open {
+        color: #198754;
+        background-color: rgba(25, 135, 84, .1);
+    }
+
+    &--paused {
+        color: #997404;
+        background-color: rgba(255, 193, 7, .16);
+    }
+
+    &--closed {
+        color: #6c757d;
+        background-color: rgba(108, 117, 125, .1);
+    }
+}
