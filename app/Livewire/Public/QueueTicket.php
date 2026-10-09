@@ -10,6 +10,7 @@ use App\Exceptions\Queue\QueueDomainException;
 use App\Models\QueueEntry;
 use App\Models\VirtualQueue;
 use App\Support\Queue\TrackingToken;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cookie;
 use Livewire\Component;
 
@@ -32,7 +33,9 @@ class QueueTicket extends Component
     public function mount(VirtualQueue $virtualQueue): void
     {
         $this->virtualQueueId = $virtualQueue->id;
-        $this->token = request()->cookie($this->cookieName());
+
+        $cookie = request()->cookie($this->cookieName());
+        $this->token = is_string($cookie) ? $cookie : null;
     }
 
     public function join(): void
@@ -107,7 +110,7 @@ class QueueTicket extends Component
         return VirtualQueue::query()->findOrFail($this->virtualQueueId);
     }
 
-    public function render()
+    public function render(): View
     {
         $virtualQueue = $this->virtualQueue();
         $session = $virtualQueue->activeSession;

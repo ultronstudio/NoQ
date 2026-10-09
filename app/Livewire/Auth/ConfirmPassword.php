@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Auth;
 
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
@@ -10,7 +12,7 @@ class ConfirmPassword extends Component
 {
     public string $password = '';
 
-    public function confirm()
+    public function confirm(): RedirectResponse
     {
         $this->validate([
             'password' => ['required', 'string'],
@@ -27,7 +29,7 @@ class ConfirmPassword extends Component
         return redirect()->intended(route('dashboard'));
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.auth.confirm-password');
     }

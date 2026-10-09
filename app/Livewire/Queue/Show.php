@@ -18,6 +18,7 @@ use App\Models\QueueEntry;
 use App\Models\QueueSession;
 use App\Models\ServicePoint;
 use App\Models\VirtualQueue;
+use Illuminate\Contracts\View\View;
 use Livewire\Component;
 
 /**
@@ -263,7 +264,7 @@ class Show extends Component
         $this->dispatch('toast', variant: 'error', message: $message);
     }
 
-    public function render()
+    public function render(): View
     {
         $virtualQueue = $this->virtualQueue();
         $session = $virtualQueue->activeSession;

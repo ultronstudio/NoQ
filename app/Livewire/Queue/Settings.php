@@ -3,6 +3,8 @@
 namespace App\Livewire\Queue;
 
 use App\Models\VirtualQueue;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Livewire\Component;
 
 /**
@@ -30,7 +32,7 @@ class Settings extends Component
         $this->maxWaiting = $virtualQueue->max_waiting;
     }
 
-    public function save()
+    public function save(): RedirectResponse
     {
         $virtualQueue = $this->virtualQueue();
 
@@ -62,7 +64,7 @@ class Settings extends Component
         return VirtualQueue::query()->findOrFail($this->virtualQueueId);
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.queue.settings');
     }

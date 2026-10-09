@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Models\RoleAssignment;
 use App\Models\User;
 use App\Models\VirtualQueue;
+use Illuminate\Contracts\View\View;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
@@ -114,7 +115,7 @@ class TeamAccess extends Component
         return VirtualQueue::query()->findOrFail($this->virtualQueueId);
     }
 
-    public function render()
+    public function render(): View
     {
         $virtualQueue = $this->virtualQueue();
 

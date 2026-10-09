@@ -10,6 +10,8 @@ use App\Enums\QueueEntryStatus;
 use App\Exceptions\Queue\QueueSessionStateException;
 use App\Models\QueueSession;
 use App\Models\VirtualQueue;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Livewire\Component;
 
 /**
@@ -25,7 +27,7 @@ class QueueOverviewTable extends Component
 
     public string $description = '';
 
-    public function createQueue()
+    public function createQueue(): RedirectResponse
     {
         $this->authorize('create', VirtualQueue::class);
 
@@ -125,7 +127,7 @@ class QueueOverviewTable extends Component
         $this->dispatch('toast', variant: 'error', message: $message);
     }
 
-    public function render()
+    public function render(): View
     {
         $user = auth()->user();
 

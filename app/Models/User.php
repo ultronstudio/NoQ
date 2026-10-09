@@ -126,14 +126,15 @@ class User extends Authenticatable
     public function operableServicePointIdsFor(VirtualQueue $virtualQueue): array
     {
         if ($this->isSupervisorOf($virtualQueue)) {
-            return $virtualQueue->servicePoints()->pluck('id')->all();
+            return array_values($virtualQueue->servicePoints()->pluck('id')->map(fn ($id) => (int) $id)->all());
         }
 
-        return $this->roleAssignments()
+        return array_values($this->roleAssignments()
             ->where('role', Role::ServicePointWorker)
             ->whereHas('servicePoint', fn ($query) => $query->where('virtual_queue_id', $virtualQueue->id))
             ->pluck('service_point_id')
-            ->all();
+            ->map(fn ($id) => (int) $id)
+            ->all());
     }
 
     public function canViewQueue(VirtualQueue $virtualQueue): bool

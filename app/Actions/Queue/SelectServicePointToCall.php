@@ -40,7 +40,11 @@ final class SelectServicePointToCall
         }
 
         return $free
-            ->sortBy(fn (ServicePoint $servicePoint) => $this->lastResolvedAt($servicePoint)?->timestamp ?? -1)
+            ->sortBy(function (ServicePoint $servicePoint) {
+                $lastResolvedAt = $this->lastResolvedAt($servicePoint);
+
+                return $lastResolvedAt === null ? -1 : $lastResolvedAt->timestamp;
+            })
             ->first();
     }
 

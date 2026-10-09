@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Auth;
 
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
@@ -16,7 +18,7 @@ class Login extends Component
 
     public bool $remember = false;
 
-    public function login()
+    public function login(): RedirectResponse
     {
         $this->email = mb_strtolower(trim($this->email));
 
@@ -53,7 +55,7 @@ class Login extends Component
         return redirect()->intended(route('dashboard'));
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.auth.login');
     }
