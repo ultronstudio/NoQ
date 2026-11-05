@@ -2,12 +2,9 @@
 
 @section('title', 'Přihlášení')
 
-@section('auth-title', 'Přihlášení do NoQ')
-
-@section(
-    'auth-description',
-    'Přihlášení je určeno správcům a pracovníkům systému.'
-)
+@section('auth-title')
+    <livewire:auth.time-welcome />
+@endsection
 
 @section('auth-info')
     {{--

@@ -1,15 +1,13 @@
 <!doctype html>
 <html lang="{{ config('metadata.language') }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     @include('partials.metadata')
 
-    @vite([
-        'resources/scss/app.scss',
-        'resources/js/app.js',
-    ])
+    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
 
     @livewireStyles
     @stack('styles')
@@ -23,17 +21,9 @@
                     @logo('mono-white')
                 </a>
 
-                <div class="auth-side__content">
-                    <h1>
-                        @yield('auth-title', 'Administrace NoQ')
-                    </h1>
 
-                    <p>
-                        @yield(
-                            'auth-description',
-                            'Přihlášení je určeno správcům a pracovníkům systému.'
-                        )
-                    </p>
+                <div class="auth-side__content">
+                    @yield('auth-title')
 
                     @hasSection('auth-info')
                         <div class="auth-side__info">
@@ -42,13 +32,15 @@
                     @endif
                 </div>
 
+
                 <div class="auth-side__footer">
                     <a href="{{ route('home') }}">
                         Zpět na hlavní stránku
                     </a>
 
                     <span>
-                        &copy; {{ date('Y') }} <a href="https://petrvurm.cz?utm_source=noq" target="_blank" rel="noopener">Petr Vurm</a>
+                        &copy; {{ date('Y') }} <a href="https://petrvurm.cz?utm_source=noq" target="_blank"
+                            rel="noopener">Petr Vurm</a>
                     </span>
                 </div>
             </div>
@@ -64,4 +56,5 @@
     @livewireScripts
     @stack('scripts')
 </body>
+
 </html>
