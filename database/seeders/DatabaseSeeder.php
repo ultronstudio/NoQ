@@ -28,6 +28,12 @@ class DatabaseSeeder extends Seeder
      */
     private function seedDemoQueue(): void
     {
+        $operator = User::query()->where('email', 'demo@noq.local')->first();
+
+        if ($operator !== null) {
+            return;
+        }
+
         $operator = User::factory()->create([
             'name' => 'Demo operátor',
             'email' => 'demo@noq.local',
