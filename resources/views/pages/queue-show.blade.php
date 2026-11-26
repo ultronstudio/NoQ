@@ -6,10 +6,6 @@
     <div class="container py-4">
         <div class="mb-4 d-flex justify-content-between align-items-start gap-3 flex-wrap">
             <div>
-                <a href="{{ route('dashboard') }}" class="link-secondary text-decoration-none small">
-                    &larr; Administrace
-                </a>
-
                 <h1 class="h2 mb-1 mt-2">
                     {{ $virtualQueue->name }}
                 </h1>

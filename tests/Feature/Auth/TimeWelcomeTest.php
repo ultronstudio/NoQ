@@ -42,6 +42,14 @@ class TimeWelcomeTest extends TestCase
         return $method->invoke($component, $stats, $keys);
     }
 
+    private function pickSubtitle(TimeWelcome $component, array $candidates): string
+    {
+        $method = new ReflectionMethod($component, 'pickSubtitle');
+        $method->setAccessible(true);
+
+        return $method->invoke($component, $candidates);
+    }
+
     public function test_renders_on_login_page(): void
     {
         $this->get(route('login'))->assertOk();
@@ -228,6 +236,51 @@ class TimeWelcomeTest extends TestCase
             $this->assertIsString($component->get('subtitle'));
             $this->assertNotEmpty($component->get('subtitle'));
         }
+    }
+
+    public function test_subtitle_does_not_repeat_within_the_next_25_refreshes(): void
+    {
+        $component = Livewire::test(TimeWelcome::class);
+
+        $seen = [];
+
+        for ($i = 0; $i < 25; $i++) {
+            $component->call('refresh');
+            $seen[] = $component->get('subtitle');
+        }
+
+        $this->assertCount(25, array_unique($seen), 'Expected 25 consecutive refreshes to all be distinct.');
+        $this->assertCount(25, $component->instance()->recentSubtitles);
+        $this->assertSame($seen, $component->instance()->recentSubtitles);
+
+        // One more refresh: still must not repeat anything from the last
+        // 25, even though the window has now rolled past the very first one.
+        $component->call('refresh');
+        $latest = $component->get('subtitle');
+
+        $this->assertNotContains($latest, array_slice($seen, 1));
+        $this->assertCount(25, $component->instance()->recentSubtitles);
+    }
+
+    public function test_pick_subtitle_falls_back_to_full_pool_once_eligible_candidates_are_exhausted(): void
+    {
+        $component = Livewire::test(TimeWelcome::class)->instance();
+
+        $candidates = ['a', 'b', 'c'];
+
+        $picked = [];
+        for ($i = 0; $i < 3; $i++) {
+            $picked[] = $this->pickSubtitle($component, $candidates);
+        }
+
+        // All 3 available messages get used up before anything repeats.
+        $this->assertSame(['a', 'b', 'c'], collect($picked)->sort()->values()->all());
+
+        // The pool is now exhausted (all 3 are "recent"); picking again
+        // must still return a valid candidate instead of crashing.
+        $again = $this->pickSubtitle($component, $candidates);
+
+        $this->assertContains($again, $candidates);
     }
 
     public function test_pick_random_stat_skips_unavailable_keys(): void

@@ -79,11 +79,8 @@
 .queue-status {
     display: inline-flex;
     align-items: center;
-
     padding: .3rem .6rem;
-
-    border-radius: 999px;
-
+    border-radius: 5px;
     font-size: .8rem;
     font-weight: 600;
     line-height: 1;
@@ -95,24 +92,22 @@
         width: .4rem;
         height: .4rem;
         margin-right: .4rem;
-
         border-radius: 50%;
-
         background-color: currentColor;
     }
 
     &--open {
-        color: #198754;
-        background-color: rgba(25, 135, 84, .1);
+        color: #ffffff;
+        background-color: #198754;
     }
 
     &--paused {
-        color: #997404;
-        background-color: rgba(255, 193, 7, .16);
+        color: #000000;
+        background-color: #ffc107;
     }
 
     &--closed {
-        color: #6c757d;
-        background-color: rgba(108, 117, 125, .1);
+        color: #ffffff;
+        background-color: #dc3545;
     }
 }

@@ -11,9 +11,21 @@ use Throwable;
 
 class TimeWelcome extends Component
 {
+    /**
+     * How many of the most recently shown subtitles are kept off-limits for
+     * reselection. Persisted as a public property so Livewire carries it
+     * across refresh() calls within the same page visit.
+     */
+    private const SUBTITLE_MEMORY = 25;
+
     public string $title;
 
     public string $subtitle;
+
+    /**
+     * @var list<string>
+     */
+    public array $recentSubtitles = [];
 
     public function mount(): void
     {
@@ -42,8 +54,8 @@ class TimeWelcome extends Component
         $messages = [
             // Fronty, čekání a NoQ
             'Život je krátký. Fronty by měly být také.',
-            'Čekání je umění. My ho raději automatizujeme.',
-            'Kdo si počká, ten se dočká. Prý.',
+            'Čekání je umění. My ho raději modernizujeme.',
+            'Kdo si počká, ten se možná dočká.',
             'Fronta není závod. Ale někteří to pořád zkoušejí.',
             'Káva chutná lépe mimo čekárnu.',
             'Všichni jsme si rovni. Jen někdo má nižší pořadové číslo.',
@@ -105,27 +117,24 @@ class TimeWelcome extends Component
             'Vaše pořadí je uloženo. Vaše nervy bohužel ne.',
             'Fronta je synchronizovaná. Lidé už méně.',
             'Digitální fronta. Protože papírové lístky také jednou dojdou.',
-            'Realtime aktualizace. Protože obnovovat stránku každou sekundu je přežitek.',
-            'Každá fronta má svůj konec. Pokud správně funguje worker.',
+            'Aktualizace v reálném čase. Protože obnovovat stránku každou sekundu je přežitek.',
+            'Každá fronta má svůj konec. Pokud správně funguje systém.',
             'Pořadová čísla rostou. Doufejme, že ne exponenciálně.',
-            'Databáze si vaše pořadí pamatuje. Vy nemusíte.',
+            'Databáze si vaše pořadí pamatuje.',
             'Zpracováváme požadavky. Prosíme, nezpracovávejte nás.',
             'Nekonečná fronta je zajímavá teorie. V praxi méně.',
-            'Queue overflow. To už zní jako problém.',
             'Systém běží. Fronta stojí. Technicky je všechno v pořádku.',
             'Člověk míní, fronta mění. Scheduler rozhoduje.',
             fn (array $stats): ?string => $stats['waitingCount'] !== null && $stats['waitingCount'] >= 1
                 ? 'V produkci se netestuje. Hlavně když '.$this->waitingPeopleClause($stats['waitingCount']).'.'
                 : null,
             'Restart fronty není totéž co restart trpělivosti.',
-            'Ctrl+Z na předbíhání bohužel neexistuje.',
-            'Jeden požadavek odbavíte, dva další přijdou. Klasika.',
+            'Ctrl+X na předbíhání bohužel neexistuje.',
+            'Jeden požadavek odbavíte, dva další přijdou.',
             'Na mém počítači ta fronta fungovala.',
-            'To není zaseknutá fronta. To je velmi dlouhý interval aktualizace.',
-            'Bug ve frontě? Gratulujeme, právě jste v testovacím scénáři.',
+            'To není zaseknutá fronta. To je velmi dlouhá aktualizace.',
+            'Chyba ve frontě? Gratulujeme, právě jste v testovacím scénáři.',
             'Odbavení dokončeno. Další proces, prosím.',
-            'Žádný race condition. Tady rozhoduje pořadí.',
-            'Ne každá fronta potřebuje load balancer. Některé potřebují pauzu.',
 
             // Byrokracie a absurdní čekání
             'Pro zkrácení čekání prosím vyplňte dalších pět formulářů.',
@@ -154,9 +163,10 @@ class TimeWelcome extends Component
             'Kde není fronta, tam je čekání. A kde není čekání, tam je něco nečekaného.',
             'Kdo dřív přijde, ten míň čeká.',
             'I tesař ve frontě se někdy utne.',
+            'Žádná fronta neroste do nebe.',
             'Žádný učený frontu nepředběhne.',
             'Bez pořadového čísla do fronty nelez.',
-            'Kdo je ve frontě, ten se počítá',
+            'Kdo je ve frontě, ten se počítá.',
             'Když můžeš ve frontě stát dnes, můžeš stát i zítra.',
             'Co se ve frontě naučíš, to mimo frontu neuplatníš.',
             'Fronta má velké oči. A lidé v ní velké nervy.',
@@ -258,8 +268,35 @@ class TimeWelcome extends Component
 
         return [
             $greeting.'!',
-            $candidates[array_rand($candidates)],
+            $this->pickSubtitle($candidates),
         ];
+    }
+
+    /**
+     * Picks a subtitle at random, excluding whatever was shown in the last
+     * self::SUBTITLE_MEMORY picks so the same joke can't repeat until that
+     * many others have been shown first. Falls back to the full pool if
+     * the exclusion would leave nothing to choose from (e.g. very few
+     * eligible candidates given the current stats).
+     *
+     * @param  list<string>  $candidates
+     */
+    private function pickSubtitle(array $candidates): string
+    {
+        $eligible = array_values(array_diff($candidates, $this->recentSubtitles));
+
+        if ($eligible === []) {
+            $eligible = $candidates;
+        }
+
+        $subtitle = $eligible[array_rand($eligible)];
+
+        $this->recentSubtitles = array_slice(
+            [...$this->recentSubtitles, $subtitle],
+            -self::SUBTITLE_MEMORY
+        );
+
+        return $subtitle;
     }
 
     /**
