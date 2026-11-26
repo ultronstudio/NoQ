@@ -25,6 +25,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $closed_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property-read int|null $waiting_count Only set when eager-loaded via withCount('entries as waiting_count', ...).
+ * @property-read int|null $called_count Only set when eager-loaded via withCount('entries as called_count', ...).
  */
 #[Fillable(['virtual_queue_id', 'opened_by_user_id', 'closed_by_user_id', 'status', 'next_number', 'opened_at', 'closed_at'])]
 class QueueSession extends Model

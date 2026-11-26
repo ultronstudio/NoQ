@@ -37,6 +37,9 @@ class TimeWelcome extends Component
         [$this->title, $this->subtitle] = $this->getTimedMessage();
     }
 
+    /**
+     * @return array{0: string, 1: string}
+     */
     private function getTimedMessage(): array
     {
         $hour = now()->hour;
@@ -396,6 +399,7 @@ class TimeWelcome extends Component
      * any that are null (unavailable), so a message can reference "some
      * real number" without caring which specific stat it ends up being.
      *
+     * @param  array<string, mixed>  $stats
      * @param  list<string>  $keys
      */
     private function pickRandomStat(array $stats, array $keys): ?int
